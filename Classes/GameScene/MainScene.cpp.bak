@@ -1,0 +1,173 @@
+#include "MainScene.h"
+#include "AppMacros.h"
+#include "GameDefinition.h"
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#include "JNIProxy.h"
+#endif
+
+
+MainScene::MainScene()
+: tableView(NULL){}
+MainScene::~MainScene(){}
+
+/*
+ *私有函数
+ *初始化变�?资源�?
+ */
+void MainScene::initVariable()
+{
+
+
+}
+
+bool MainScene::init()
+{
+	pComponentLayer = NULL;
+	pBgLayer = NULL;
+	pDlgLayer = NULL;
+
+	pScaleSprite = NULL;
+	pSprite = NULL;
+	pCtlBtn = NULL;
+	pLabel = NULL;
+
+	pFrameCache = NULL;
+	pSpriteBatchNode = NULL;
+	return BasicScene::init();
+}
+
+void MainScene::onEnter()
+{
+	BasicScene::onEnter();
+	initVariable();
+	initTableView();
+
+	CCLabelTTF* label = CCLabelTTF::create("Hllo,<font face='HelveticaNeue-CondensedBold' size=60 color='#00CC00'>先生</font>Morning,<a href='action=show'><font color='#FF00FF'>要吃什�?</font>\nDo you eat\or not?</a>\nYour money:<a href='item=ID10086'><font color='#FF0000'>2000</font></a>", "Thonburi", 32);  
+	
+	label->setPosition(ccp(320,480));
+	this->addChild(label);
+}
+
+void MainScene::onExit()
+{
+	BasicScene::onExit();
+}
+
+/*
+ * 私有函数
+ * 初始化列表控�?
+ */
+void MainScene::initTableView()
+{
+	CCSize vSize = CCDirector::sharedDirector()->getVisibleSize();
+	tableView = CCTableView::create(this, CCSizeMake(vSize.width,vSize.height));
+	tableView->setDirection(kCCScrollViewDirectionVertical);
+	tableView->setPosition(CCPointZero);
+	tableView->setDelegate(this);
+	tableView->setVerticalFillOrder(kCCTableViewFillTopDown);
+	this->addChild(tableView,1);
+	//tableView->reloadData();
+}
+
+unsigned int MainScene::numberOfCellsInTableView(cocos2d::extension::CCTableView *table)
+{
+	return TableCellNum;
+}
+
+/*
+ * 填充tableView每一�?
+ * 初始化和刷新时都会调用该函数
+ * 在该函数中设置tableCell所包含的控件及布局
+ * @param table 调用该函数的tableView
+ * @param idx 每一个tableCell所在的�?�?开�?
+*/
+CCTableViewCell* MainScene::tableCellAtIndex(cocos2d::extension::CCTableView *table, unsigned int idx)
+{
+	//在现有tableView中抽取cell
+	CCTableViewCell* cell = table->dequeueCell();
+
+	//格式化此tableView所要显示的文字在配置文件中对应的key
+	std::string key;
+	char temp[7] = {0};
+	sprintf(temp, "title%d", idx);
+	key.append(temp);
+	if (!cell)
+	{
+		//如果cell没有创建,创建一个新的cell
+		//直接返回该cell,等待下一次刷新时设置其中的控�?
+		cell = new CCTableViewCell();
+		cell->autorelease();
+	} else 
+	{
+		//cell已创�?
+		//获取cell中的label控件
+		pLabel = (CCLabelTTF*)cell->getChildByTag(SCENE_MAIN);
+		if (pLabel)
+		{
+			//label控件存在
+			//调用JNI代理类中的xml读取函数获取对应的文�?并设置进label
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+			pLabel->setString(JNIProxy::getStrFromXml(key).c_str());
+#else
+			pLabel->setString(titleLabels[idx].c_str());
+#endif
+			
+		}else
+		{
+			//label控件不存�?
+			//创建一个新的label,并加入cell
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+			pLabel = CCLabelTTF::create(JNIProxy::getStrFromXml(key).c_str(),"Arial",TITLE_FONT_SIZE*2.5);
+#else
+			pLabel = CCLabelTTF::create(titleLabels[idx].c_str(),"Arial",TITLE_FONT_SIZE*2.5);
+#endif
+			
+			pLabel->setPosition(ccp(table->getContentSize().width/2,32));
+			pLabel->setTag(SCENE_MAIN);
+			cell->addChild(pLabel);
+		}
+		
+	}
+
+	return cell;
+}
+
+CCSize MainScene::cellSizeForTable(cocos2d::extension::CCTableView *table)
+{
+	return CCSizeMake(table->getContentSize().width,84);
+}
+
+void MainScene::tableCellHighlight(cocos2d::extension::CCTableView* table, cocos2d::extension::CCTableViewCell* cell)
+{
+	CCLog("highlight idx: %d",cell->getIdx());
+	pLabel = (CCLabelTTF*)cell->getChildByTag(SCENE_MAIN);
+	CCArray* array = cell->getChildren();
+	if (pLabel)
+	{
+		pLabel->setScale(2);
+	}
+}
+
+void MainScene::tableCellUnhighlight(cocos2d::extension::CCTableView* table, cocos2d::extension::CCTableViewCell* cell)
+{
+	CCLog("unhighlight idx: %d",cell->getIdx());
+	pLabel = (CCLabelTTF*)cell->getChildByTag(SCENE_MAIN);
+	if (pLabel)
+	{
+		pLabel->setScale(1);
+	}
+}
+
+void MainScene::tableCellTouched(cocos2d::extension::CCTableView* table, cocos2d::extension::CCTableViewCell* cell)
+{
+	CCLog("cell idx: %d",cell->getIdx());
+	switch (cell->getIdx())
+	{
+	case 0:
+		break;
+	case 1:
+		TDSceneManager::sharedSceneManager()->runSceneWithID(SCENE_READ_XML);
+		break;
+	}
+}
