@@ -1,0 +1,6 @@
+proj.*/
+!proj.android
+proj.android/bin/
+proj.android/gen/
+proj.android/obj/
+*.bak
