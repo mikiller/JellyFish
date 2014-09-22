@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KawaiiJellyfish</string>
+    
+    <string name="title0">主页</string>
+    <string name="title1">C读取Xml</string>
+    <string name="title2">json解析</string>
+    <string name="title3">文件读写</string>
+    <string name="title4">遍历assets</string>
+    <string name="title6">待定</string>
+    
+    <string name="sqliteDB_Name">m7log.db</string>
+    
+    <string name="IllegalArgumentException_msg">非法的参数异常</string>
+    <string name="IllegalAccessException_msg">获取字符串值异常</string>
+    <string name="IlNoSuchFieldException_msg">没有该类型的key</string>
+    
+    <string name="test0">测试0</string>
+    <string name="test1">测试1</string>
+    
+    <string name="json_test_1">{\"String Node\":\"Json Strng\",\"Integer Node\":34,\"Bool Node\":true}</string>
+    
+</resources>

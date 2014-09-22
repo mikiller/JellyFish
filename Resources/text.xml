@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <testNode1>test</testNode1>
+    <testNode2 attribute1="attr1"/>
+    <testNode3>
+        <subNode1>testsub</subNode1>
+    </testNode3>
+</resources>

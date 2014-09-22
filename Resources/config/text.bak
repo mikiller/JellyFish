@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testRoot>
+    <test1 attr1="tt" attr2="oo">ok</test1>
+    <test2 name="jim"/>
+</testRoot>
